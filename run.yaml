@@ -1,0 +1,18 @@
+project: your-project
+region: europe-west1
+
+allow-invoke:
+  - user:your-user@domain.com
+
+crypto-autobuyer-cbpro:
+  dir: app
+  image: gcr.io/${project}/crypto-autobuyer:latest
+  env:
+    EXCHANGE: coinbasepro
+    API_KEY: your-api-key
+    API_SECRET: your-api-secret
+    PASSWORD: your-api-password
+    PAIR: BTC/GBP
+    AMOUNT: "1000"
+  cron:
+    schedule: 0 9 * * 6  # Every Saturday 9am
