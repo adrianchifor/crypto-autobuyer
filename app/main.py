@@ -3,7 +3,6 @@ import sys
 import logging
 import ccxt
 
-from ccxt.base.errors import ExchangeError
 from flask import Flask
 
 EXCHANGE = os.getenv("EXCHANGE", None)
@@ -33,12 +32,6 @@ else:
     print(f"Error: Incorrect formatting of pair {PAIR}, needs to be <BASE>/<QUOTE>")
     sys.exit(1)
 
-try:
-    ticker = exchange.fetch_ticker(PAIR)
-except ExchangeError:
-    print(f"Error: Couldn't find {PAIR} pair on {EXCHANGE} exchange")
-    sys.exit(1)
-
 TYPE = TYPE.upper()
 if TYPE != "BUY" and TYPE != "SELL":
     print(f"Error: TYPE can only be 'BUY' or 'SELL'")
@@ -57,6 +50,7 @@ def setup_logging():
 @app.route("/", methods=["POST"])
 def main():
     try:
+        ticker = exchange.fetch_ticker(PAIR)
         amount_in_base_currency = round(float(AMOUNT) / float(ticker["last"]), 8)
         msg = f"{amount_in_base_currency} {BASE_PAIR} ({AMOUNT} {QUOTE_PAIR})"
         if TYPE == "BUY":
