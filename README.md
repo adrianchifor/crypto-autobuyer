@@ -13,7 +13,7 @@ pip3 install --user run-marathon
 
 Create trade-only API keys on your favourite exchanges and modify the example [run.yaml](https://github.com/adrianchifor/crypto-autobuyer/blob/master/run.yaml) to fit your needs. The pair/exchange combinations + order chains (using multiple services) are limitless.
 
-If you want to use a pre-built Docker image, you can use `adrianchifor/crypto-autobuyer` and you can skip the `dir` definition and don't need to `run build`.
+If you want to use a pre-built Docker image, you can `echo "FROM adrianchifor/crypto-autobuyer:latest" > Dockerfile` and change `dir` to the location of the Dockerfile.
 ```
 $ cat run.yaml
 project: your-project
