@@ -4,6 +4,7 @@ region: europe-west1
 allow-invoke:
   - user:your-user@domain.com
 
+# Buy £1k of BTC on CBPro every week and place a take profit 30% above buy price
 crypto-autobuyer-cbpro:
   dir: app
   image: gcr.io/${project}/crypto-autobuyer:latest
@@ -14,5 +15,6 @@ crypto-autobuyer-cbpro:
     PASSWORD: your-api-password
     PAIR: BTC/GBP
     AMOUNT: "1000"
+    TAKE_PROFIT: "30"
   cron:
-    schedule: 0 9 * * 6  # Every Saturday 9am
+    schedule: 0 9 * * 6 # Every Saturday 9am

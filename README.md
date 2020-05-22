@@ -1,6 +1,6 @@
 # Crypto Autobuyer
 
-Easily and quickly automate recurring cryptocurrency purchases. Supports 122 exchanges and thousands of markets/pairs. Main usecases are to average-in on downtrends and periodically cash out on uptrends, as the majority of passive investors are highly unlikely to catch exact market tops and bottoms.
+Easily and quickly automate recurring cryptocurrency purchases and take profits. Supports 122 exchanges and thousands of markets/pairs. Main usecases are to average-in on downtrends and periodically cash out on uptrends, as the majority of passive investors are highly unlikely to catch exact market tops and bottoms.
 
 Designed to run on Google [Cloud Run](https://cloud.google.com/run/) + [Cloud Scheduler](https://cloud.google.com/scheduler/) and managed using [run-marathon](https://github.com/adrianchifor/run-marathon), but can be deployed in any environment that supports Python3.
 
@@ -32,6 +32,7 @@ crypto-autobuyer-cbpro:
     PASSWORD: *****
     PAIR: BTC/GBP
     AMOUNT: "1000"
+    TAKE_PROFIT: "30"
   cron:
     schedule: 0 9 * * 6  # Every Saturday 9am
 
@@ -82,4 +83,4 @@ The app takes the following environment variables:
 
 * **AMOUNT** (required): For the BTC/GBP pair it's the GBP amount, e.g. "1000" would buy £1000 worth of BTC
 
-* **TYPE** (optional, default "BUY"): The type of market order. The main usecase for the app is to automate periodic buys but you can also sell by setting TYPE to "SELL"
+* **TAKE_PROFIT** (optional): The percentage gain for taking profits on purchases, e.g. "30" would place a limit sell 30% above the buy price for the same amount
