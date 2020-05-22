@@ -1,5 +1,7 @@
 # Crypto Autobuyer
 
+![Docker](https://github.com/adrianchifor/crypto-autobuyer/workflows/Publish%20Docker/badge.svg)
+
 Easily and quickly automate recurring cryptocurrency purchases and take profits. Supports 122 exchanges and thousands of markets/pairs. Main usecases are to average-in on downtrends and periodically cash out on uptrends, as the majority of passive investors are highly unlikely to catch exact market tops and bottoms.
 
 Designed to run on Google [Cloud Run](https://cloud.google.com/run/) + [Cloud Scheduler](https://cloud.google.com/scheduler/) and managed using [run-marathon](https://github.com/adrianchifor/run-marathon), but can be deployed in any environment that supports Python3.
