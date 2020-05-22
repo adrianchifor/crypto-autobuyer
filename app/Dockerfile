@@ -10,4 +10,4 @@ RUN apk add --no-cache --virtual ccxt-deps g++ libffi-dev openssl-dev \
 
 WORKDIR /app
 
-CMD ["gunicorn", "-w", "3", "main:app"]
+CMD ["gunicorn", "main:app"]
