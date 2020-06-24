@@ -5,11 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+    - uses: docker/build-push-action@v1
       with:
-        name: adrianchifor/crypto-autobuyer
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: app/Dockerfile
-        context: app
+        repository: adrianchifor/crypto-autobuyer
+        path: app
+        tag_with_ref: true
