@@ -8,36 +8,32 @@ Designed to run on Google [Cloud Run](https://cloud.google.com/run/) + [Cloud Sc
 
 ## Setup
 
- Install [run-marathon](https://github.com/adrianchifor/run-marathon#quickstart) (python 3.6+)
+ 1. Install [run-marathon](https://github.com/adrianchifor/run-marathon#quickstart) (python 3.6+)
 ```
 pip3 install --user run-marathon
 ```
 
-Create trade-only API keys on your favourite exchanges and modify the example [run.yaml](https://github.com/adrianchifor/crypto-autobuyer/blob/master/run.yaml) to fit your needs. The pair/exchange combinations + order chains (using multiple services) are limitless.
+2. Create a trade-only API key on your favourite exchange
 
-If you want to use a pre-built Docker image, you can `echo "FROM adrianchifor/crypto-autobuyer:latest" > Dockerfile` and change `dir` to the location of the Dockerfile.
+3. Save your API secret and password (if applicable) to GCP Secret Manager. These will be automatically decrypted and loaded on container startup using [Berglas](https://github.com/GoogleCloudPlatform/berglas)
 ```
-$ cat run.yaml
-project: your-project
-region: europe-west1
+echo -n 'your-api-secret' | \
+  gcloud secrets create api-secret \
+    --replication-policy="automatic" \
+    --data-file=- \
+    --project your-project
 
-allow-invoke:
-  - user:your-user@domain.com
+echo -n 'your-api-password' | \
+  gcloud secrets create api-password \
+    --replication-policy="automatic" \
+    --data-file=- \
+    --project your-project
+```
 
-crypto-autobuyer-cbpro:
-  dir: app
-  image: gcr.io/${project}/crypto-autobuyer:latest
-  env:
-    EXCHANGE: coinbasepro
-    API_KEY: your-api-key
-    API_SECRET: *****
-    PASSWORD: *****
-    PAIR: BTC/GBP
-    AMOUNT: "1000"
-    TAKE_PROFIT: "30"
-  cron:
-    schedule: 0 9 * * 6  # Every Saturday 9am
+4. Modify the example [run.yaml](./run.yaml) to fit your needs and then build + deploy
 
+Note: If you want to use a pre-built Docker image, you can `echo "FROM adrianchifor/crypto-autobuyer:latest" > Dockerfile` and change `dir` to the location of the Dockerfile.
+```
 $ run check
 Cloud Run, Build, Container Registry, PubSub and Scheduler APIs are enabled. All good!
 
@@ -69,17 +65,15 @@ Bought 0.156231 BTC (1000 GBP)
 
 ## Configuration
 
-**Security note:** It's highly recommended that you encrypt your `API_SECRET` and `PASSWORD` (if applicable) env vars and decrypt them at container startup. I recommend using [Berglas](https://github.com/GoogleCloudPlatform/berglas); here's [a relevant example](https://github.com/GoogleCloudPlatform/berglas/tree/master/examples/cloudrun/python).
-
 The app takes the following environment variables:
 
 * **EXCHANGE** (required): The `id` of any of the [exchanges that ccxt supports](https://github.com/ccxt/ccxt#supported-cryptocurrency-exchange-markets) (122)
 
 * **API_KEY** (required)
 
-* **API_SECRET** (required, see security note above)
+* **API_SECRET** (required, store in GCP Secret Manager)
 
-* **PASSWORD** (required by some exchanges, like coinbasepro; see security note above)
+* **PASSWORD** (required by some exchanges, like coinbasepro; store in GCP Secret Manager)
 
 * **PAIR** (required): The exchange ticker pair to use, e.g. BTC/GBP
 

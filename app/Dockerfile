@@ -1,13 +1,12 @@
 FROM python:3.7-alpine
 
-RUN mkdir /app
+WORKDIR /app
 COPY *.py /app
 
 RUN apk add --no-cache --virtual ccxt-deps g++ libffi-dev openssl-dev \
   && pip install --no-cache-dir 'Flask' 'gunicorn' 'ccxt==1.27.84' \
-  && apk del ccxt-deps \
-  && rm -r /root/.cache
+  && apk del ccxt-deps
 
-WORKDIR /app
+COPY --from=gcr.io/berglas/berglas:0.5.0 /bin/berglas /bin/berglas
 
-CMD ["gunicorn", "main:app"]
+CMD exec /bin/berglas exec -- gunicorn --log-level info main:app

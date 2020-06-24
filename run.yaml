@@ -11,10 +11,13 @@ crypto-autobuyer-cbpro:
   env:
     EXCHANGE: coinbasepro
     API_KEY: your-api-key
-    API_SECRET: your-api-secret
-    PASSWORD: your-api-password
+    API_SECRET: sm://${project}/api-secret
+    PASSWORD: sm://${project}/api-password
     PAIR: BTC/GBP
     AMOUNT: "1000"
     TAKE_PROFIT: "30"
   cron:
-    schedule: 0 9 * * 6 # Every Saturday 9am
+    schedule: 0 9 * * 6
+  iam-roles:
+    # Required to decrypt API secret and password
+    - roles/secretmanager.secretAccessor
