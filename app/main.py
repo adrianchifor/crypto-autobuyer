@@ -5,6 +5,8 @@ import ccxt
 
 from flask import Flask
 
+gunicorn_logger = logging.getLogger("gunicorn.error")
+
 EXCHANGE = os.getenv("EXCHANGE", None)
 API_KEY = os.getenv("API_KEY", None)
 API_SECRET = os.getenv("API_SECRET", None)
@@ -13,7 +15,8 @@ AMOUNT = os.getenv("AMOUNT", None)
 TAKE_PROFIT = os.getenv("TAKE_PROFIT", None)
 
 if not EXCHANGE or not API_KEY or not API_SECRET or not PAIR or not AMOUNT:
-    print("Error: EXCHANGE, API_KEY, API_SECRET, PAIR AND AMOUNT env vars are required")
+    gunicorn_logger.error(
+        "Error: EXCHANGE, API_KEY, API_SECRET, PAIR AND AMOUNT env vars are required")
     sys.exit(1)
 
 exchange_config = {
@@ -29,7 +32,7 @@ exchange = getattr(ccxt, EXCHANGE)(exchange_config)
 if "/" in PAIR:
     BASE_PAIR, QUOTE_PAIR = PAIR.split("/")
 else:
-    print(f"Error: Incorrect formatting of pair {PAIR}, needs to be <BASE>/<QUOTE>")
+    gunicorn_logger.error(f"Error: Incorrect formatting of pair {PAIR}, needs to be <BASE>/<QUOTE>")
     sys.exit(1)
 
 app = Flask(__name__)
@@ -37,7 +40,6 @@ app = Flask(__name__)
 
 @app.before_first_request
 def setup_logging():
-    gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
