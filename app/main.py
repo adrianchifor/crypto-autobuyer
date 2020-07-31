@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import logging
 import ccxt
 
@@ -47,18 +48,16 @@ def setup_logging():
 @app.route("/", methods=["POST"])
 def main():
     try:
-        ticker = exchange.fetch_ticker(PAIR)
-        price = float(ticker["last"])
+        price = get_price()
         amount_in_base_currency = round(float(AMOUNT) / price, 8)
-
-        exchange.create_market_buy_order(PAIR, amount_in_base_currency)
+        market_buy(amount_in_base_currency)
         app.logger.info((f"Bought {amount_in_base_currency} {BASE_PAIR} at "
                          f"{price} {QUOTE_PAIR} ({AMOUNT} {QUOTE_PAIR})"))
 
         if TAKE_PROFIT:
             tp_price = round(price + (price * (int(TAKE_PROFIT) / 100)), 1)
             tp_amount = int(amount_in_base_currency * tp_price)
-            exchange.create_limit_sell_order(PAIR, amount_in_base_currency, tp_price)
+            limit_sell(amount_in_base_currency, tp_price)
             app.logger.info((f"Limit sell set for {amount_in_base_currency} {BASE_PAIR} at "
                              f"{tp_price} {QUOTE_PAIR} ({tp_amount} {QUOTE_PAIR})"))
 
@@ -66,6 +65,40 @@ def main():
     except Exception as e:
         app.logger.error(e)
         return f"Error: {e}", 500
+
+
+def get_price(retries: int = 3) -> float:
+    try:
+        ticker = exchange.fetch_ticker(PAIR)
+        return float(ticker["last"])
+    except Exception as e:
+        if retries <= 0:
+            raise
+        gunicorn_logger.error(f"get_price failed: {e}, retrying...")
+        time.sleep(1)
+        return get_price(retries-1)
+
+
+def market_buy(amount: float, retries: int = 3):
+    try:
+        exchange.create_market_buy_order(PAIR, amount)
+    except Exception as e:
+        if retries <= 0:
+            raise
+        gunicorn_logger.error(f"market_buy failed: {e}, retrying...")
+        time.sleep(1)
+        return market_buy(amount, retries-1)
+
+
+def limit_sell(amount: float, price: float, retries: int = 3):
+    try:
+        exchange.create_limit_sell_order(PAIR, amount, price)
+    except Exception as e:
+        if retries <= 0:
+            raise
+        gunicorn_logger.error(f"limit_sell failed: {e}, retrying...")
+        time.sleep(1)
+        return limit_sell(amount, price, retries-1)
 
 
 if __name__ == "__main__":
