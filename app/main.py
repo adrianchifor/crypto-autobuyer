@@ -87,7 +87,7 @@ def market_buy(amount: float, retries: int = 3):
             raise
         gunicorn_logger.error(f"market_buy failed: {e}, retrying...")
         time.sleep(1)
-        return market_buy(amount, retries-1)
+        market_buy(amount, retries-1)
 
 
 def limit_sell(amount: float, price: float, retries: int = 3):
@@ -98,7 +98,7 @@ def limit_sell(amount: float, price: float, retries: int = 3):
             raise
         gunicorn_logger.error(f"limit_sell failed: {e}, retrying...")
         time.sleep(1)
-        return limit_sell(amount, price, retries-1)
+        limit_sell(amount, price, retries-1)
 
 
 if __name__ == "__main__":
