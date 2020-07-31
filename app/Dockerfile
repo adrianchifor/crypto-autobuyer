@@ -1,7 +1,7 @@
 FROM python:3.7-alpine
 
 RUN apk add --no-cache --virtual ccxt-deps g++ libffi-dev openssl-dev \
-  && pip install --no-cache-dir 'Flask' 'gunicorn' 'ccxt==1.31.45' \
+  && pip install --no-cache-dir 'Flask' 'gunicorn' 'ccxt==1.32.39' \
   && apk del ccxt-deps
 
 WORKDIR /app
