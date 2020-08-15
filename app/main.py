@@ -5,6 +5,7 @@ import logging
 import ccxt
 
 from flask import Flask
+from ccxt.base.errors import NetworkError
 
 gunicorn_logger = logging.getLogger("gunicorn.error")
 
@@ -71,7 +72,7 @@ def get_price(retries: int = 3) -> float:
     try:
         ticker = exchange.fetch_ticker(PAIR)
         return float(ticker["last"])
-    except Exception as e:
+    except NetworkError as e:
         if retries <= 0:
             raise
         gunicorn_logger.error(f"get_price failed: {e}, retrying...")
@@ -82,7 +83,7 @@ def get_price(retries: int = 3) -> float:
 def market_buy(amount: float, retries: int = 3):
     try:
         exchange.create_market_buy_order(PAIR, amount)
-    except Exception as e:
+    except NetworkError as e:
         if retries <= 0:
             raise
         gunicorn_logger.error(f"market_buy failed: {e}, retrying...")
@@ -93,7 +94,7 @@ def market_buy(amount: float, retries: int = 3):
 def limit_sell(amount: float, price: float, retries: int = 3):
     try:
         exchange.create_limit_sell_order(PAIR, amount, price)
-    except Exception as e:
+    except NetworkError as e:
         if retries <= 0:
             raise
         gunicorn_logger.error(f"limit_sell failed: {e}, retrying...")
