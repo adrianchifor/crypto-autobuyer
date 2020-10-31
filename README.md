@@ -32,7 +32,7 @@ echo -n 'your-api-password' | \
 
 4. Modify the example [run.yaml](./run.yaml) to fit your needs and then build + deploy
 
-Note: If you want to use a pre-built Docker image, you can `echo "FROM adrianchifor/crypto-autobuyer:latest" > Dockerfile` and change `dir` to the location of the Dockerfile.
+Note: If you want to use a pre-built Docker image, you can `echo "FROM ghcr.io/adrianchifor/crypto-autobuyer:latest" > Dockerfile` and change `dir` to the location of the Dockerfile.
 ```
 $ run check
 Cloud Run, Build, Container Registry, PubSub and Scheduler APIs are enabled. All good!
